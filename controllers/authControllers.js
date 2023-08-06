@@ -1,23 +1,19 @@
-const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const bcrypt = require("bcrypt");
+const User = require("../models/user");
 
 async function signup(req, res) {
   try {
-    
     const { username, password } = req.body;
     const user = await User.findOne({ username });
     if (!!user) {
-      return res.status(401).json({ error: 'User Already Exist' });
+      return res.status(401).json({ error: "User Already Exist" });
+    } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = new User({ username, password: hashedPassword });
+      await user.save();
+      const savedUser = await User.findById(user._id);
+      res.json({ message: "User Saved successfully", data: savedUser });
     }
-    else{
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, password: hashedPassword });
-        await user.save();
-        const savedUser = await User.findById(user._id);
-        res.json({message:'User Saved successfully',data:savedUser});
-
-    }
-    
   } catch (error) {
     res.status(500).json({ error: error });
   }
@@ -26,17 +22,18 @@ async function signup(req, res) {
 async function login(req, res) {
   try {
     const { username, password } = req.body;
+    console.log(username, password);
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
-    res.json({ message: 'Login successful' });
+    res.json({ message: "Login successful",data:[user] });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while logging in' });
+    res.status(500).json({ error: "An error occurred while logging in" });
   }
 }
 
