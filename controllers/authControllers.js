@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
 async function signup(req, res) {
-  console.log('i m hittin')
   try {
     const { firstName,lastName,email,phonenumber, password } = req.body;
     const useremail = await User.findOne({ email });
@@ -23,9 +22,9 @@ async function signup(req, res) {
 
 async function login(req, res) {
   try {
-    const { username, password } = req.body;
-    console.log(username, password);
-    const user = await User.findOne({ username });
+    const { email, password } = req.body;
+    console.log(email, password);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
@@ -33,7 +32,7 @@ async function login(req, res) {
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    res.json({ message: "Login successful",data:[user] });
+    res.json({ message: "Login successful",data:user });
   } catch (error) {
     res.status(500).json({ error: "An error occurred while logging in" });
   }

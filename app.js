@@ -26,6 +26,6 @@ app.use('/', authRoutes);
 app.use('/', taskRoutes);
 
 // Start the server
-app.listen(port, () => {
+app.listen(port,'192.168.1.6', () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
