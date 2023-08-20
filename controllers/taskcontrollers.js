@@ -1,6 +1,7 @@
 const Todo = require('../models/todo');
 
 async function getAllTasks(req, res) {
+  console.log('heree')
   try {
     const userId = req.params.userId;
     const tasks = await Todo.find({ userId });
@@ -21,7 +22,7 @@ async function createTask(req, res) {
     });
     await newTask.save();
     const tasks = await Todo.find({ userId });
-    res.json(tasks);
+    res.json({tasks:tasks,message:'task added successfully'});
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while adding the task' });
   }
@@ -59,10 +60,21 @@ async function deleteTask(req, res) {
   }
 }
 
+async function deleteAllTasks(req, res) {
+  try {
+    const userId = req.params.userId;
+    await Todo.deleteMany({ userId });
+    res.json({ message: 'All tasks deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while deleting tasks' });
+  }
+}
+
 module.exports = {
   createTask,
   getTasks,
   updateTaskStatus,
   deleteTask,
-  getAllTasks
+  getAllTasks,
+  deleteAllTasks
 };
